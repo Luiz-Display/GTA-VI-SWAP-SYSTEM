@@ -1,0 +1,359 @@
+body {
+  background-color: black;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto;
+  height: 90vh;
+  opacity: 0;
+  animation: fadeIn 2s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.start {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: white;
+  display: flex;
+  font-size: 20px;
+  align-items: center;
+  gap: 10px;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.startbutton {
+  width: 30px;
+  height: 30px;
+  gap: 20px;
+}
+
+#bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+
+#bg-video.blurred {
+  filter: blur(8px);
+  transition: filter 0.3s ease;
+}
+
+#pause-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.034);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#pause-overlay .content {
+  position: absolute;
+  width: 850px;
+  padding: 80px 40px 40px 40px; /* mais espaço no topo */
+  background-color: rgba(0, 0, 0, 0.586);
+  border-radius: 10px;
+  color: white;
+  font-family: "Helvetica Neue 45 Light";
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+#pause-overlay .top-right-info {
+  position: absolute;
+  top: 40px; /* mantém dentro do painel */
+  right: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 15px;
+}
+
+#pause-overlay .portrait {
+  width: 80px;
+  height: 80px;
+  border-radius: 60%;
+  border: 2px solid rgb(20, 109, 216);
+  background-color: black;
+  margin: 0;
+}
+
+.portrait.lucia-selected {
+  border: 2px solid #ff0099 !important;
+}
+
+#pause-overlay .time-display {
+  font-size: 30px;
+  transform: translateY(-55%);
+}
+
+/* Botões minimalistas */
+#pause-overlay button {
+  background: transparent;
+  color: white;
+  border: none;
+  border-radius: 0;
+  font-size: 18px;
+  padding: 15px 20px;
+  cursor: pointer;
+  margin: 0;
+  width: 70%;
+  text-align: left;
+  transition: border 0.3s ease, background-color 0.3s ease;
+}
+
+#pause-overlay button:hover {
+  background-color: white;
+  color: black;
+}
+
+#bg-video.low-saturation {
+  filter: saturate(45%);
+  transition: filter 0.2s ease;
+}
+
+#character-wheel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 360px;
+  height: 320px;
+  background-color: rgba(54, 54, 54, 0.9);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 600;
+  overflow: hidden;
+  display: flex;
+  border: 8px solid rgba(0, 0, 0, 0.664);
+}
+
+#character-wheel .divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background-color: rgba(0, 0, 0, 0.866);
+  transform: translateX(-1px);
+  z-index: 670;
+}
+
+#character-wheel .side {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+#character-wheel .side img {
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Correção específica para cada lado */
+#character-wheel .side.left img {
+  height: 310px;
+  margin-top: 25px;
+  margin-left: 15px;
+  transform: scale(0.95);
+}
+
+#character-wheel .side.right img {
+  height: 250px;
+  margin-top: 60px;
+  margin-right: 20px;
+  transform: scale(1.1);
+}
+
+/* Efeitos de hover */
+#character-wheel .side.left:hover {
+  background-color: #ff0099;
+}
+
+#character-wheel .side.right:hover {
+  background-color: #88ccff;
+}
+
+/* Esconde imagens de portrait sob hover e mostra swap com degradê */
+#character-wheel .side.left:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+#character-wheel .side.right:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+}
+
+#character-wheel .side.left:hover img,
+#character-wheel .side.right:hover img {
+  visibility: hidden;
+}
+
+/* SWAP: elemento externo ao wheel */
+.swap-preview {
+  position: fixed;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0;
+  animation: fadeInSwap 0.25s forwards ease-out;
+  transition: transform 0.2s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+  perspective: 600px;
+}
+
+/* SWAP da Lúcia */
+.swap-preview.lucia-swap {
+  /* Estilos específicos para Lúcia */
+  width: 190px;
+  height: 400px;
+  filter: hue-rotate(-10deg);
+  mask-image: linear-gradient(to top, transparent 14%, black 26%),
+    /* inferior */ linear-gradient(to left, transparent 0%, black 26%); /* lateral direita */
+  mask-composite: intersect;
+  -webkit-mask-composite: destination-in;
+  mask-size: 100% 100%;
+}
+
+/* SWAP do Jason */
+.swap-preview.jason-swap {
+  /* Estilos específicos para Jason */
+  width: 195px;
+  height: 400px;
+  filter: brightness(1.1);
+  mask-image: linear-gradient(to top, transparent 21%, black 45%),
+    /* inferior */ linear-gradient(to right, transparent 0%, black 10%); /* lateral esquerda */
+  mask-composite: intersect;
+  -webkit-mask-composite: destination-in;
+  mask-size: 100% 100%;
+  transform: translateX(-40%);
+}
+
+@keyframes fadeInSwap {
+  to {
+    opacity: 1;
+  }
+}
+
+.rockstarlogo {
+  position: fixed;
+  bottom: 5px;
+  left: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: left;
+  z-index: 1000;
+}
+
+.rockstarlogo img {
+  max-height: auto;
+  width: 30px;
+  filter: grayscale();
+  opacity: 0.5;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.rockstarlogo img:hover {
+  filter: none;
+
+  opacity: 1;
+}
+
+#tutorial-box {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 300px;
+  z-index: 9999;
+  font-size: 14px;
+  font-family: "Arial", sans-serif;
+}
+
+#character-wheel .side.keyboard-selected-left {
+  background-color: #ff0099;
+}
+
+#character-wheel .side.keyboard-selected-right {
+  background-color: #88ccff;
+}
+
+#character-wheel .side.keyboard-selected-left img,
+#character-wheel .side.keyboard-selected-right img {
+  visibility: hidden;
+}
+
+#loading-slider {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+  background-color: black;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#loading-slider img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+#loading-slider img.active {
+  opacity: 1;
+}
